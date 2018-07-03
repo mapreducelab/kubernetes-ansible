@@ -1,0 +1,83 @@
+---
+artifact:
+  name: kubernetes
+  version: 0.1.0
+  build: 12
+  type: rpm
+network:
+  kubernetes_masters:
+    count: 3
+    rootname: kubernetes
+    domain: p02.eng.sjc01.qualys.com
+    exposed_ports:
+      - port: 50171
+        type: transport
+    nodes:
+      - hostname: kubernetes01
+      - hostname: kubernetes02
+      - hostname: kubernetes03
+opscontext:
+  os:
+    version: 7-4.1708
+    base: centos
+  secrets:
+    qredis:
+      type: sshkey
+      private_key:
+  connections:
+    graphite:
+      nodes:
+        - "01"
+      rootname: gmon
+      domain: p02.eng.sjc01.qualys.com
+      port: 2003
+      prefix: qredis
+  artifacts:
+    - name: kubernetes_controll_plane
+      version: v1.11.0
+      type: docker
+    - name: calico
+      version: v3.1.3
+      type: docker
+    - name: etcd
+      version: 3.2.18
+      type: docker
+    - name: pause
+      version: 3.1
+      type: docker
+    - name: coredns
+      version: 1.1.3
+      type: docker
+    - name: docker-ce
+      version: 17.09.1.ce-1.el7.centos.x86_64
+      type: rpm
+    - name: lib64ltdl7
+      version: 2.4.2-6-mdv2012.0.x86_64
+      type: rpm
+  logging:
+    loglevel: ERROR
+servicecontext:
+
+# TODO Refactor
+kubernetes_home: /etc/kubernetes
+artifacts:
+  kubernetes: v1.11.0
+  calico: v3.1.3
+  etcd: 3.2.18
+  pause: 3.1
+  coredns: 1.1.3
+docker_rpms:
+  - https://art-hq.intranet.qualys.com/artifactory/dev-yum-local/qualys/k8s/docker-ce-17.09.1.ce-1.el7.centos.x86_64.rpm
+  - https://art-hq.intranet.qualys.com/artifactory/dev-yum-local/qualys/k8s/lib64ltdl7-2.4.2-6-mdv2012.0.x86_64.rpm
+kubernetes_rpms:
+  - https://art-hq.intranet.qualys.com/artifactory/dev-yum-local/qualys/k8s/5736d31b18c9a00419105394d462ecec4847e6a9bbc7b5a4e41790a67e29c817-kubectl-1.11.0-0.x86_64.rpm
+  - https://art-hq.intranet.qualys.com/artifactory/dev-yum-local/qualys/k8s/d19addf9b24468fcd6bb09ffa509eb00259659018d7381867c4249b493dfdba8-kubelet-1.11.0-0.x86_64.rpm
+  - https://art-hq.intranet.qualys.com/artifactory/dev-yum-local/qualys/k8s/fe33057ffe95bfae65e2f269e1b05e99308853176e24a4d027bc082b471a07c0-kubernetes-cni-0.6.0-0.x86_64.rpm
+  - https://art-hq.intranet.qualys.com/artifactory/dev-yum-local/qualys/k8s/c276be7b12fbca50df96fdc0fc07ecbb758060a31b4ef3c1e8908b7bd9ebddcf-kubeadm-1.11.0-0.x86_64.rpm
+  - https://art-hq.intranet.qualys.com/artifactory/dev-yum-local/qualys/k8s/e253c692a017b164ebb9ad1b6537ff8afd93c35e9ebc340a52c5bd42425c0760-cri-tools-1.11.0-0.x86_64.rpm
+  - https://art-hq.intranet.qualys.com/artifactory/dev-yum-local/qualys/k8s/ebtables-2.0.10-16.el7.x86_64.rpm
+  - https://art-hq.intranet.qualys.com/artifactory/dev-yum-local/qualys/k8s/socat-1.7.3.2-5.el7.lux.x86_64.rpm
+# TODO TEST kubeadm init with config and remove tasks related to pull and tag images
+kubernetes_images:
+  - image: art-hq.intranet.qualys.com:5001/k8s.gcr.io/pause-amd64:{{ artifacts.pause }}
+    original: k8s.gcr.io/pause:{{ artifacts.pause }}

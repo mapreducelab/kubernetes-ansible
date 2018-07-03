@@ -1,0 +1,91 @@
+---
+- name: Stop and disable Puppet agent
+  systemd:
+    state: stopped
+    enabled: no
+    daemon_reload: yes
+    name: puppetagent
+  register: puppetagent
+
+- name: Stop and disable Docker daemon
+  systemd:
+    state: stopped
+    enabled: no
+    daemon_reload: yes
+    name: docker
+  register: docker_daemon
+  ignore_errors: yes
+
+- name: Remove Docker dir
+  file:
+    state: absent
+    path: /var/lib/docker/
+  register: remove_docker_dir
+
+- name: Clean old docker packages
+  yum:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - docker
+    - docker-client
+    - docker-client-latest
+    - docker-common
+    - docker-latest
+    - docker-latest-logrotate
+    - docker-logrotate
+    - docker-selinux
+    - docker-engine-selinux
+    - docker-engine
+  register: remove_docker_rpms
+
+- name: Install Docker rpms
+  yum:
+    name: "{{ item }}"
+    state: installed
+  with_items: "{{ docker_rpms }}"
+  register: docker_rpms
+
+- name: Start and enable Docker daemon
+  systemd:
+    state: started
+    enabled: yes
+    daemon_reload: yes
+    name: docker
+  register: docker_daemon
+
+- name: Set setenforce 0
+  shell: setenforce 0
+  register: setenforce
+
+- name: Install Kubernetes rpms
+  yum:
+    name: "{{ item }}"
+    state: installed
+  with_items: "{{ kubernetes_rpms }}"
+  register: kubernetes_rpms
+
+- name: Start and enable kubelet daemon
+  systemd:
+    state: started
+    enabled: yes
+    daemon_reload: yes
+    name: kubelet
+  register: kubelet_daemon
+
+- name: Create k8s.conf
+  copy:
+    src: k8s.conf
+    dest: /etc/sysctl.d/k8s.conf
+    owner: root
+    group: root
+    mode: 0644
+  register: k8s_conf
+
+- name: Run sysctl --system
+  shell: sysctl --system
+  register: sysctl_restart
+
+- name: Disable swap memory
+  shell: swapoff -a
+  register: swapoff

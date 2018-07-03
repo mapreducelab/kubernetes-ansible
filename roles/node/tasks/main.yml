@@ -1,0 +1,8 @@
+---
+- name: Pull docker images for kubernetes
+  shell: docker pull "{{ item.image }}"
+  loop: "{{ kubernetes_images }}"
+
+- name: Tag docker images for kubernetes
+  shell: docker tag "{{ item.image }}" "{{ item.original }}"
+  loop: "{{ kubernetes_images }}"
