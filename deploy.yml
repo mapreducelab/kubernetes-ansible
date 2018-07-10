@@ -13,3 +13,8 @@
   become: yes
   roles:
     - node
+
+- hosts: storage-node
+  become: yes
+  roles:
+    - rook

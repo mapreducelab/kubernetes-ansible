@@ -81,3 +81,4 @@ kubernetes_rpms:
 kubernetes_images:
   - image: art-hq.intranet.qualys.com:5001/k8s.gcr.io/pause-amd64:{{ artifacts.pause }}
     original: k8s.gcr.io/pause:{{ artifacts.pause }}
+rook_disks: ["sdc", "sdd", "sde", "sdf", "sdg", "sdh", "sdi", "sdj", "sdk"]

@@ -1,0 +1,5 @@
+---
+- name: Clean artifact path
+  file:
+    state: absent
+    path: "/var/lib/rook/"
