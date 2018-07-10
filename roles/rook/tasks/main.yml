@@ -31,4 +31,3 @@
     path: "/var/lib/ceph/osd/ceph-{{ item }}"
     state: mounted
   loop: "{{ rook_disks }}"
-  

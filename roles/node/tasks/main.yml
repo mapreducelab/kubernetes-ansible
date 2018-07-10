@@ -9,3 +9,10 @@
 
 - name: Create a directory for the shared domain socket
   shell: mkdir /tmp/domain && chmod a+w /tmp/domain
+
+- name: Wait for Kubernetes master for 1 min
+  pause:
+    minutes: 1
+
+- name: Join the Kubernetes cluster
+  shell: "{{ hostvars['K8S_TOKEN_HOLDER']['token'] }}"
