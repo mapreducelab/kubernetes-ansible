@@ -51,3 +51,12 @@
 
 - name: Deploy Calico network
   shell: "export KUBECONFIG=/etc/kubernetes/admin.conf && kubectl create -f {{ kubernetes_home }}/calico.yml"
+
+- name: Get join node command
+  shell: "kubeadm token create --print-join-command"
+  register: joincmd
+
+- name: "Add K8S join command"
+  add_host:
+    name:   "K8S_TOKEN_HOLDER"
+    token:  "{{ joincmd.stdout }}"
