@@ -1,0 +1,5 @@
+---
+- hosts: storage-node
+  become: yes
+  roles:
+    - clean
