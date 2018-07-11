@@ -35,85 +35,6 @@
     mode: 0644
   register: busybox
 
-- name: Create Rook dir
-  file:
-    path: "{{ kubernetes_home }}/rook"
-    state: directory
-    mode: 0755
-
-- name: Create rook filesystem.yml
-  copy:
-    src: rook/filesystem.yml
-    dest: "{{ kubernetes_home }}/rook/filesystem.yml"
-    owner: root
-    group: root
-    mode: 0644
-
-- name: Create rook kube-registry.yml
-  copy:
-    src: rook/kube-registry.yml
-    dest: "{{ kubernetes_home }}/rook/kube-registry.yml"
-    owner: root
-    group: root
-    mode: 0644
-
-- name: Create rook object.yml
-  copy:
-    src: rook/object.yml
-    dest: "{{ kubernetes_home }}/rook/object.yml"
-    owner: root
-    group: root
-    mode: 0644
-
-- name: Create rook operator.yml
-  copy:
-    src: rook/operator.yml
-    dest: "{{ kubernetes_home }}/rook/operator.yml"
-    owner: root
-    group: root
-    mode: 0644
-
-- name: Create rook pool.yml
-  copy:
-    src: rook/pool.yml
-    dest: "{{ kubernetes_home }}/rook/pool.yml"
-    owner: root
-    group: root
-    mode: 0644
-
-- name: Create rook rgw-external.yml
-  copy:
-    src: rook/rgw-external.yml
-    dest: "{{ kubernetes_home }}/rook/rgw-external.yml"
-    owner: root
-    group: root
-    mode: 0644
-
-- name: Create rook storageclass.yml
-  copy:
-    src: rook/storageclass.yml
-    dest: "{{ kubernetes_home }}/rook/storageclass.yml"
-    owner: root
-    group: root
-    mode: 0644
-
-- name: Create rook toolbox.yml
-  copy:
-    src: rook/toolbox.yml
-    dest: "{{ kubernetes_home }}/rook/toolbox.yml"
-    owner: root
-    group: root
-    mode: 0644
-
-- name: Create rook dashboard
-  copy:
-    src: rook/dashboard-external.yml
-    dest: "{{ kubernetes_home }}/rook/dashboard-external.yml"
-    owner: root
-    group: root
-    mode: 0644
-
-
 - name: Pull docker images for kubernetes controll plane
   shell: docker pull "{{ item.image }}"
   loop: "{{ kubernetes_images }}"
@@ -130,3 +51,12 @@
 
 - name: Deploy Calico network
   shell: "export KUBECONFIG=/etc/kubernetes/admin.conf && kubectl create -f {{ kubernetes_home }}/calico.yml"
+
+- name: Get join node command
+  shell: "kubeadm token create --print-join-command"
+  register: joincmd
+
+- name: "Add K8S join command"
+  add_host:
+    name:   "K8S_TOKEN_HOLDER"
+    token:  "{{ joincmd.stdout }}"

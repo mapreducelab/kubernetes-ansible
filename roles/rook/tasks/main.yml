@@ -1,0 +1,33 @@
+---
+- name: Partition disks for Rook storage system
+  parted:
+    device: "/dev/{{ item }}"
+    number: 1
+    flags: [ lvm ]
+    label: msdos
+    part_type: primary
+    part_start: 0%
+    part_end: 100%
+    state: present
+  loop: "{{ rook_disks }}"
+
+- name: Create folders for Rook
+  file:
+    path: "/var/lib/ceph/osd/ceph-{{ item }}"
+    state: directory
+    mode: 0755
+  loop: "{{ rook_disks }}"
+
+- name: Format disks for Rook
+  filesystem:
+    fstype: ext4
+    dev: "/dev/{{ item }}1"
+  loop: "{{ rook_disks }}"
+
+- name: Mount disks
+  mount:
+    fstype: ext4
+    src: "/dev/{{ item }}1"
+    path: "/var/lib/ceph/osd/ceph-{{ item }}"
+    state: mounted
+  loop: "{{ rook_disks }}"

@@ -13,3 +13,13 @@
   become: yes
   roles:
     - node
+
+- hosts: kube-master
+  become: yes
+  roles:
+    - configuration
+
+- hosts: storage-node
+  become: yes
+  roles:
+    - rook

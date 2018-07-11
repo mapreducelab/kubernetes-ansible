@@ -1,8 +1,9 @@
+# TODO convert to Template and pass advertiseAddress as variable!
 apiVersion: kubeadm.k8s.io/v1alpha2
 kind: MasterConfiguration
 kubernetesVersion: v1.11.0
 api:
-  advertiseAddress: 10.44.70.202
+  advertiseAddress: 10.44.70.201
   bindPort: 6443
   # controlPlaneEndpoint: ""
 # auditPolicy:
