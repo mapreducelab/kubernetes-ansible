@@ -1,0 +1,6 @@
+---
+- name: Create folder for Alluxio
+  file:
+    path: "/tmp/domain"
+    state: directory
+    mode: 0755
